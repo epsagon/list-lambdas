@@ -2,6 +2,7 @@
 Enumerates Lambda functions from every region with interesting metadata
 """
 
+from __future__ import print_function
 from datetime import datetime
 import argparse
 import boto3
@@ -158,7 +159,7 @@ def print_lambda_list(args):
 
     min_table_data, all_table_data = create_tables(lambdas_data, args)
     table = AsciiTable(min_table_data)
-    print table.table
+    print(table.table)
 
     if not args.csv:
         return
@@ -215,7 +216,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     if args.sort_by not in SORT_KEYS:
-        print 'ERROR: Illegal column name: {0}.'.format(args.sort_by)
+        print('ERROR: Illegal column name: {0}.'.format(args.sort_by))
         exit(1)
 
     print_lambda_list(args)
