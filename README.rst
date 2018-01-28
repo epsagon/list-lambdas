@@ -7,6 +7,8 @@ List Lambda functions
 .. image:: https://github.com/epsagon/list-lambdas/blob/master/list-lambdas.png
    :align: center
 
+(Based on `photo <https://commons.wikimedia.org/wiki/File:AWS_Lambda_logo.svg>`_ by Valve Software / `CC BY-SA 4.0 <https://creativecommons.org/licenses/by-sa/4.0/deed.en>`_)
+
 Motivation
 ----------
 - Enumerate list of Lambda functions from **every region**.
