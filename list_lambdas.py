@@ -84,6 +84,11 @@ def create_tables(lambdas_data, args):
     all_table_data = [ALL_TABLE_HEADERS]
     for lambda_data in lambdas_data:
         function_data = lambda_data['function-data']
+        last_invocation = 'N/A (no invocations?)'
+        if lambda_data['last-invocation'] != -1:
+            last_invocation = get_days_ago(
+                datetime.fromtimestamp(lambda_data['last-invocation'] / 1000)
+            )
         all_table_data.append([
             lambda_data['region'],
             str(function_data['FunctionName']),
@@ -93,7 +98,7 @@ def create_tables(lambdas_data, args):
             str(function_data['Runtime']),
             str(function_data['Description']),
             get_days_ago(lambda_data['last-modified']),
-            get_days_ago(datetime.fromtimestamp(lambda_data['last-invocation'] / 1000))
+            last_invocation
         ])
 
     if args.should_print_all:
@@ -139,13 +144,16 @@ def print_lambda_list(args):
                 descending=True
             )
 
-            last_invocation = max(
-                [log.get('lastEventTimestamp', 0) for log in logs['logStreams']]
-            )
+            log_streams_timestamp = [log.get('lastEventTimestamp', 0) for log in logs['logStreams']]
+            last_invocation = -1
 
-            inactive_days = (datetime.now() - datetime.fromtimestamp(last_invocation / 1000)).days
-            if args.inactive_days_filter > inactive_days:
-                continue
+            if len(log_streams_timestamp) > 0:
+                last_invocation = max(log_streams_timestamp)
+
+                inactive_days = (datetime.now() -
+                                 datetime.fromtimestamp(last_invocation / 1000)).days
+                if args.inactive_days_filter > inactive_days:
+                    continue
 
             lambdas_data.append({
                 'region': region,
