@@ -5,6 +5,7 @@ Enumerates Lambda functions from every region with interesting metadata
 from __future__ import print_function
 from datetime import datetime
 import argparse
+import codecs
 import boto3
 from boto3.session import Session
 from botocore.exceptions import ClientError
@@ -126,7 +127,7 @@ def create_tables(lambdas_data, args):
             '%.2f' % (function_data['CodeSize'] / BYTE_TO_MB),
             str(function_data['Timeout']),
             str(function_data['Runtime']),
-            str(function_data['Description']),
+            function_data['Description'].encode('utf-8'),
             get_days_ago(lambda_data['last-modified']),
             last_invocation
         ])
@@ -192,9 +193,9 @@ def print_lambda_list(args):
     if not args.csv:
         return
 
-    with open(args.csv, 'wt') as output_file:
+    with codecs.open(args.csv, 'w', encoding='utf-8') as output_file:
         for table_row in all_table_data:
-            output_file.writelines('{0}\n'.format(','.join(table_row)))
+            output_file.writelines('{0}\n'.format(','.join(table_row)).decode('utf-8'))
 
 
 if __name__ == '__main__':
