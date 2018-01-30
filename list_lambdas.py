@@ -7,6 +7,7 @@ from datetime import datetime
 import argparse
 import boto3
 from boto3.session import Session
+from botocore.exceptions import ClientError
 from terminaltables import AsciiTable
 import progressbar
 
@@ -74,6 +75,35 @@ def get_days_ago(datetime_obj):
     return datetime_str
 
 
+def get_last_invocation(region, args, function_name):
+    """
+    Return last invocation timestamp (epoch) or -1 if not found.
+    -1 can be returned if no log group exists for Lambda, or if there are no streams in the log.
+    :param region: function region
+    :param args: arguments
+    :param function_name: function name
+    :return: last invocation or -1
+    """
+    logs_client = init_boto_client('logs', region, args)
+    last_invocation = -1
+
+    try:
+        logs = logs_client.describe_log_streams(
+            logGroupName='/aws/lambda/{0}'.format(function_name),
+            orderBy='LastEventTime',
+            descending=True
+        )
+    except ClientError as exception:
+        return last_invocation
+
+    log_streams_timestamp = [log.get('lastEventTimestamp', 0) for log in logs['logStreams']]
+
+    if len(log_streams_timestamp) > 0:
+        last_invocation = max(log_streams_timestamp)
+
+    return last_invocation
+
+
 def create_tables(lambdas_data, args):
     """
     Create the output tables
@@ -125,7 +155,6 @@ def print_lambda_list(args):
     lambdas_data = []
     for region in progress_bar(regions):
         lambda_client = init_boto_client('lambda', region, args)
-        logs_client = init_boto_client('logs', region, args)
         functions = lambda_client.list_functions()['Functions']
         if not functions:
             continue
@@ -138,18 +167,9 @@ def print_lambda_list(args):
             )
 
             # Extract last invocation time from logs
-            logs = logs_client.describe_log_streams(
-                logGroupName='/aws/lambda/{0}'.format(function_data['FunctionName']),
-                orderBy='LastEventTime',
-                descending=True
-            )
+            last_invocation = get_last_invocation(region, args, function_data['FunctionName'])
 
-            log_streams_timestamp = [log.get('lastEventTimestamp', 0) for log in logs['logStreams']]
-            last_invocation = -1
-
-            if len(log_streams_timestamp) > 0:
-                last_invocation = max(log_streams_timestamp)
-
+            if last_invocation != -1:
                 inactive_days = (datetime.now() -
                                  datetime.fromtimestamp(last_invocation / 1000)).days
                 if args.inactive_days_filter > inactive_days:
@@ -222,9 +242,9 @@ if __name__ == '__main__':
         metavar='sort_by'
     )
 
-    args = parser.parse_args()
-    if args.sort_by not in SORT_KEYS:
-        print('ERROR: Illegal column name: {0}.'.format(args.sort_by))
+    arguments = parser.parse_args()
+    if arguments.sort_by not in SORT_KEYS:
+        print('ERROR: Illegal column name: {0}.'.format(arguments.sort_by))
         exit(1)
 
-    print_lambda_list(args)
+    print_lambda_list(arguments)
