@@ -40,7 +40,7 @@ CSV file:
 Usage
 -----
 
-Filter only Lambda functions that has not been active for the past 10 days:
+Filter only Lambda functions that have not been active in the last 10 days:
 
 .. code-block:: bash
 
