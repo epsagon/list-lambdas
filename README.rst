@@ -19,7 +19,7 @@ Setup
 -----
 .. code-block:: bash
 
-    git clone git@github.com:epsagon/list-lambdas.git
+    git clone https://github.com/epsagon/list-lambdas
     cd list-lambdas/
     pip install -r requirements.txt
     python list_lambdas.py
