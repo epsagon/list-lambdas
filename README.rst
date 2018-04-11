@@ -1,4 +1,4 @@
-List Lambda functions
+List Lambdas functions
 =====================
 
 .. image:: https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg
