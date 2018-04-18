@@ -11,6 +11,7 @@ List Lambdas functions
 
 Motivation
 ----------
+- Read our blog post, "The curse of dead Lambda functions": https://medium.com/epsagon/the-curse-of-dead-lambda-functions-228bf812c10a
 - Enumerate list of Lambda functions from **every region**.
 - Detect **"dead"** or unused Lambda functions.
 
