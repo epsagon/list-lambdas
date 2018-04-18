@@ -127,7 +127,7 @@ def create_tables(lambdas_data, args):
             '%.2f' % (function_data['CodeSize'] / BYTE_TO_MB),
             str(function_data['Timeout']),
             str(function_data['Runtime']),
-            function_data['Description'].encode('utf-8'),
+            function_data['Description'],
             get_days_ago(lambda_data['last-modified']),
             last_invocation
         ])
