@@ -127,7 +127,7 @@ def create_tables(lambdas_data, args):
             '%.2f' % (function_data['CodeSize'] / BYTE_TO_MB),
             str(function_data['Timeout']),
             str(function_data['Runtime']),
-            function_data['Description'].encode('utf-8'),
+            function_data['Description'],
             get_days_ago(lambda_data['last-modified']),
             last_invocation
         ])
@@ -182,6 +182,7 @@ def print_lambda_list(args):
                 'last-modified': last_modified,
                 'last-invocation': last_invocation
             })
+            break
 
     # Sort data by the given key (default: by region)
     lambdas_data.sort(key=lambda x: x[args.sort_by])
@@ -195,7 +196,8 @@ def print_lambda_list(args):
 
     with codecs.open(args.csv, 'w', encoding='utf-8') as output_file:
         for table_row in all_table_data:
-            output_file.writelines('{0}\n'.format(','.join(table_row)).decode('utf-8'))
+            output_line = '{0}\n'.format(','.join(table_row))
+            output_file.writelines(output_line)
 
 
 if __name__ == '__main__':
