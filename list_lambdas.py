@@ -182,7 +182,6 @@ def print_lambda_list(args):
                 'last-modified': last_modified,
                 'last-invocation': last_invocation
             })
-            break
 
     # Sort data by the given key (default: by region)
     lambdas_data.sort(key=lambda x: x[args.sort_by])
