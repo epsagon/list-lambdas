@@ -195,7 +195,8 @@ def print_lambda_list(args):
 
     with codecs.open(args.csv, 'w', encoding='utf-8') as output_file:
         for table_row in all_table_data:
-            output_file.writelines('{0}\n'.format(','.join(table_row)).decode('utf-8'))
+            output_line = '{0}\n'.format(','.join(table_row))
+            output_file.writelines(output_line)
 
 
 if __name__ == '__main__':
