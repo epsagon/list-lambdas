@@ -162,6 +162,7 @@ def print_lambda_list(args):
         next_marker = None
         response = lambda_client.list_functions()
         while next_marker != '':
+            next_marker = ''
             functions = response['Functions']
             if not functions:
                 continue
@@ -196,7 +197,6 @@ def print_lambda_list(args):
                 })
 
             # Verify if there is next marker
-            next_marker = ''
             if 'NextMarker' in response:
                 next_marker = response['NextMarker']
                 response = lambda_client.list_functions(Marker=next_marker)
