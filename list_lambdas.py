@@ -79,7 +79,8 @@ def get_days_ago(datetime_obj):
 def get_last_invocation(region, args, function_name):
     """
     Return last invocation timestamp (epoch) or -1 if not found.
-    -1 can be returned if no log group exists for Lambda, or if there are no streams in the log.
+    -1 can be returned if no log group exists for Lambda,
+    or if there are no streams in the log.
     :param region: function region
     :param args: arguments
     :param function_name: function name
@@ -94,12 +95,14 @@ def get_last_invocation(region, args, function_name):
             orderBy='LastEventTime',
             descending=True
         )
-    except ClientError as exception:
+    except ClientError as _:
         return last_invocation
 
-    log_streams_timestamp = [log.get('lastEventTimestamp', 0) for log in logs['logStreams']]
+    log_streams_timestamp = [
+        log.get('lastEventTimestamp', 0) for log in logs['logStreams']
+    ]
 
-    if len(log_streams_timestamp) > 0:
+    if log_streams_timestamp:
         last_invocation = max(log_streams_timestamp)
 
     return last_invocation
@@ -156,32 +159,47 @@ def print_lambda_list(args):
     lambdas_data = []
     for region in progress_bar(regions):
         lambda_client = init_boto_client('lambda', region, args)
-        functions = lambda_client.list_functions()['Functions']
-        if not functions:
-            continue
+        next_marker = None
+        response = lambda_client.list_functions()
+        while next_marker != '':
+            next_marker = ''
+            functions = response['Functions']
+            if not functions:
+                continue
 
-        for function_data in functions:
-            # Extract last modified time
-            last_modified = datetime.strptime(
-                function_data['LastModified'].split('.')[0],
-                DATETIME_FORMAT
-            )
+            for function_data in functions:
+                # Extract last modified time
+                last_modified = datetime.strptime(
+                    function_data['LastModified'].split('.')[0],
+                    DATETIME_FORMAT
+                )
 
-            # Extract last invocation time from logs
-            last_invocation = get_last_invocation(region, args, function_data['FunctionName'])
+                # Extract last invocation time from logs
+                last_invocation = get_last_invocation(
+                    region,
+                    args,
+                    function_data['FunctionName']
+                )
 
-            if last_invocation != -1:
-                inactive_days = (datetime.now() -
-                                 datetime.fromtimestamp(last_invocation / 1000)).days
-                if args.inactive_days_filter > inactive_days:
-                    continue
+                if last_invocation != -1:
+                    inactive_days = (
+                        datetime.now() -
+                        datetime.fromtimestamp(last_invocation / 1000)
+                    ).days
+                    if args.inactive_days_filter > inactive_days:
+                        continue
 
-            lambdas_data.append({
-                'region': region,
-                'function-data': function_data,
-                'last-modified': last_modified,
-                'last-invocation': last_invocation
-            })
+                lambdas_data.append({
+                    'region': region,
+                    'function-data': function_data,
+                    'last-modified': last_modified,
+                    'last-invocation': last_invocation
+                })
+
+            # Verify if there is next marker
+            if 'NextMarker' in response:
+                next_marker = response['NextMarker']
+                response = lambda_client.list_functions(Marker=next_marker)
 
     # Sort data by the given key (default: by region)
     lambdas_data.sort(key=lambda x: x[args.sort_by])
@@ -201,7 +219,10 @@ def print_lambda_list(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Enumerates Lambda functions from every region with interesting metadata.'
+        description=(
+            'Enumerates Lambda functions from every region with '
+            'interesting metadata.'
+        )
     )
 
     parser.add_argument(
@@ -209,7 +230,10 @@ if __name__ == '__main__':
         dest='should_print_all',
         default=False,
         action='store_true',
-        help='Print all the information to the screen (default: print summarized information).'
+        help=(
+            'Print all the information to the screen '
+            '(default: print summarized information).'
+        )
     )
     parser.add_argument(
         '--csv',
@@ -220,13 +244,19 @@ if __name__ == '__main__':
     parser.add_argument(
         '--token-key-id',
         type=str,
-        help='AWS access key id. Must provide AWS secret access key as well (default: from local configuration).',
+        help=(
+            'AWS access key id. Must provide AWS secret access key as well '
+            '(default: from local configuration).'
+        ),
         metavar='token-key-id'
     )
     parser.add_argument(
         '--token-secret',
         type=str,
-        help='AWS secret access key. Must provide AWS access key id as well (default: from local configuration.',
+        help=(
+            'AWS secret access key. Must provide AWS access key id '
+            'as well (default: from local configuration.'
+        ),
         metavar='token-secret'
     )
     parser.add_argument(
@@ -239,7 +269,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '--sort-by',
         type=str,
-        help='Column name to sort by. Options: region, last-modified, last-invocation (default: region).',
+        help=(
+            'Column name to sort by. Options: region, '
+            'last-modified, last-invocation (default: region).'
+        ),
         default='region',
         metavar='sort_by'
     )
