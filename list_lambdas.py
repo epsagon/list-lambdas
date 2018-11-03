@@ -27,7 +27,7 @@ ALL_TABLE_HEADERS = [
     'Last Invocation',
 ]
 
-SORT_KEYS = ['region', 'last-modified', 'last-invocation']
+SORT_KEYS = ['region', 'last-modified', 'last-invocation', 'runtime']
 
 
 def list_available_lambda_regions():
@@ -141,7 +141,7 @@ def create_tables(lambdas_data, args):
         # Get only the region, function, last modified and last invocation
         min_table_data = [
             [
-                lambda_data[0], lambda_data[1], lambda_data[-2], lambda_data[-1]
+                lambda_data[0], lambda_data[1], lambda_data[5], lambda_data[-2], lambda_data[-1]
             ]
             for lambda_data in all_table_data
         ]
@@ -193,7 +193,8 @@ def print_lambda_list(args):
                     'region': region,
                     'function-data': function_data,
                     'last-modified': last_modified,
-                    'last-invocation': last_invocation
+                    'last-invocation': last_invocation,
+                    'runtime': function_data['Runtime']
                 })
 
             # Verify if there is next marker
@@ -271,7 +272,8 @@ if __name__ == '__main__':
         type=str,
         help=(
             'Column name to sort by. Options: region, '
-            'last-modified, last-invocation (default: region).'
+            'last-modified, last-invocation, '
+            'runtime (default: region).'
         ),
         default='region',
         metavar='sort_by'
