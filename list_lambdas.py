@@ -54,6 +54,9 @@ def init_boto_client(client_name, region, args):
             aws_secret_access_key=args.token_secret,
             region_name=region
         )
+    elif args.profile:
+        session = boto3.session.Session(profile_name=args.profile)
+        boto_client = session.client(client_name, region_name=region)
     else:
         boto_client = boto3.client(client_name, region_name=region)
 
@@ -277,6 +280,15 @@ if __name__ == '__main__':
         ),
         default='region',
         metavar='sort_by'
+    )
+    parser.add_argument(
+        '--profile',
+        type=str,
+        help=(
+            'AWS profile. Optional '
+            '(default: "default" from local configuration).'
+        ),
+        metavar='profile'
     )
 
     arguments = parser.parse_args()
