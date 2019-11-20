@@ -1,9 +1,6 @@
 List Lambdas functions
 =====================
 
-.. image:: https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg
-   :target: https://saythanks.io/to/ranrib
-
 .. image:: https://github.com/epsagon/list-lambdas/blob/master/list-lambdas.png
    :align: center
 
