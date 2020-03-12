@@ -66,4 +66,4 @@ Provide credentials:
 
 .. code-block:: bash
 
-    python list_lambdas.py --token_key_id <access_key_id> --token_secret <secret_access_key>
+    python list_lambdas.py --token-key-id <access_key_id> --token-secret <secret_access_key>
