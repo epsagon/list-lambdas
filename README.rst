@@ -22,6 +22,15 @@ Setup
     pip install -r requirements.txt
     python list_lambdas.py
 
+Docker
+-----
+.. code-block:: bash
+
+    git clone https://github.com/epsagon/list-lambdas
+    cd list-lambdas/
+    docker build -t list_lambdas:latest .
+    docker run --rm -v $HOME/.aws:/root/.aws -t list_lambdas:latest --profile myprofile
+
 
 Example Outputs
 ---------------
