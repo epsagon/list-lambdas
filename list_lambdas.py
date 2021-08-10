@@ -132,7 +132,7 @@ def create_tables(lambdas_data, args):
             str(function_data['MemorySize']),
             '%.2f' % (function_data['CodeSize'] / BYTE_TO_MB),
             str(function_data['Timeout']),
-            str(function_data['Runtime']),
+            str(function_data['Runtime']) if 'Runtime' in function_data else '',
             function_data['Description'],
             get_days_ago(lambda_data['last-modified']),
             last_invocation
@@ -192,12 +192,13 @@ def print_lambda_list(args):
                     if args.inactive_days_filter > inactive_days:
                         continue
 
+#                print(function_data)
                 lambdas_data.append({
                     'region': region,
                     'function-data': function_data,
                     'last-modified': last_modified,
                     'last-invocation': last_invocation,
-                    'runtime': function_data['Runtime']
+                    'runtime': function_data['Runtime'] if 'Runtime' in function_data else ''
                 })
 
             # Verify if there is next marker
