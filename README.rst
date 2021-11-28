@@ -6,9 +6,13 @@ List Lambdas functions
 
 (Based on `photo <https://commons.wikimedia.org/wiki/File:AWS_Lambda_logo.svg>`_ by Valve Software / `CC BY-SA 4.0 <https://creativecommons.org/licenses/by-sa/4.0/deed.en>`_)
 
+
+
+
+
 Motivation
 ----------
-- Read our blog post, "The curse of dead Lambda functions": https://medium.com/epsagon/the-curse-of-dead-lambda-functions-228bf812c10a
+- Read our blog post, `"The curse of dead Lambda functions" <https://epsagon.com/tools/the-curse-of-dead-aws-lambda-functions/>`__.
 - Enumerate list of Lambda functions from **every region**.
 - Detect **"dead"** or unused Lambda functions.
 
