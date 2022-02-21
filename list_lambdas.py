@@ -22,9 +22,9 @@ ALL_TABLE_HEADERS = [
     'Code Size (MB)',
     'Timeout (seconds)',
     'Runtime',
-    'Description',
     'Last Modified',
     'Last Invocation',
+    'Description',
 ]
 
 SORT_KEYS = ['region', 'last-modified', 'last-invocation', 'runtime']
@@ -133,9 +133,9 @@ def create_tables(lambdas_data, args):
             '%.2f' % (function_data['CodeSize'] / BYTE_TO_MB),
             str(function_data['Timeout']),
             str(function_data['Runtime']) if 'Runtime' in function_data else '',
-            function_data['Description'],
             get_days_ago(lambda_data['last-modified']),
-            last_invocation
+            last_invocation,
+            '"' + function_data['Description'] + '"'
         ])
 
     if args.should_print_all:
